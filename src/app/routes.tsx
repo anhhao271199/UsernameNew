@@ -7,6 +7,7 @@ import { CaseStudyPage } from './pages/CaseStudyPage';
 import { NewsPage } from './pages/NewsPage';
 import { ClientsPage } from './pages/ClientsPage';
 import { RecruitmentPage } from './pages/RecruitmentPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
       { path: 'tin-tuc', Component: NewsPage },
       { path: 'khach-hang', Component: ClientsPage },
       { path: 'tuyen-dung', Component: RecruitmentPage },
+      { path: '*', Component: NotFoundPage },
     ],
   },
 ]);
