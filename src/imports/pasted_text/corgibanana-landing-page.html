@@ -1,0 +1,412 @@
+You are an expert frontend developer. Rebuild the landing page for "CorgiBanana" 
+— a Vietnamese Digital Marketing, E-Commerce & Retail agency — as a single 
+production-ready HTML file.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CORE REQUIREMENT: AUTO LIGHT/DARK MODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Implement time-based automatic theme switching + manual toggle override:
+
+JavaScript logic (run immediately on page load):
+  - 06:00–18:00 → Light mode
+  - 18:00–06:00 → Dark mode
+  - Manual toggle button in navbar overrides auto; saves to localStorage
+  - Re-check auto theme every 60 minutes if no manual override
+
+Apply theme via [data-theme="light"] or [data-theme="dark"] on <html> tag.
+
+CSS custom properties (define both themes):
+
+:root[data-theme="light"] {
+  --bg-page: #F8F8F6;
+  --bg-card: #FFFFFF;
+  --bg-alt: #F2F2F0;
+  --text-primary: #111111;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --accent: #F9A223;
+  --accent-hover: #E8920F;
+  --accent-soft: rgba(249,162,35,0.10);
+  --border: rgba(0,0,0,0.08);
+  --nav-bg: rgba(248,248,246,0.92);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.10);
+}
+
+:root[data-theme="dark"] {
+  --bg-page: #0F0F0F;
+  --bg-card: #1A1A1A;
+  --bg-alt: #141414;
+  --text-primary: #F0F0F0;
+  --text-secondary: #A0A0A0;
+  --text-muted: #666666;
+  --accent: #F9A223;
+  --accent-hover: #FFB347;
+  --accent-soft: rgba(249,162,35,0.12);
+  --border: rgba(255,255,255,0.08);
+  --nav-bg: rgba(15,15,15,0.92);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+}
+
+Smooth theme transition on ALL elements:
+*, *::before, *::after {
+  transition: background-color 0.7s ease, color 0.7s ease,
+              border-color 0.7s ease, box-shadow 0.5s ease;
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TYPOGRAPHY & FONT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Font: Inter only (import from Google Fonts)
+  - Weights: 400, 500, 600, 700
+  - Base: 16px / line-height 1.7
+  - Headings: font-weight 700, tight letter-spacing (-0.02em)
+  - Scale: 56px / 40px / 32px / 24px / 20px / 16px / 14px
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESIGN SYSTEM — MINIMAL MODERN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Style: clean, minimal, high-contrast. No decorative clutter.
+- Border-radius: 6px (button/tag), 12px (card), 20px (pill CTA)
+- Spacing system: 4 / 8 / 16 / 24 / 40 / 64 / 96px
+- Max content width: 1160px, centered, padding 0 24px
+- Cards: var(--bg-card), border 1px solid var(--border),
+         border-radius 12px, box-shadow var(--shadow-md)
+- Accent color (#F9A223) used only for: CTA buttons, key numbers,
+  active states, dividers — NOT as background fills
+- Section alternating bg: var(--bg-page) / var(--bg-alt)
+- No gradients except hero background (subtle, dark always)
+- Hover states: translateY(-2px) + shadow increase, 0.25s ease
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RESPONSIVE — MOBILE-FIRST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Breakpoints (use these exact values):
+  xs: < 480px  → 1-col, stacked, 16px padding
+  sm: 480–767px → 1-col with wider spacing
+  md: 768–1023px → 2-col grids, tablet nav
+  lg: 1024px+  → full desktop layout
+
+Mobile nav: hamburger icon → full-screen overlay drawer
+  - Drawer slides in from right
+  - Shows nav links vertically + theme toggle + "Liên hệ" CTA
+  - Closes on link click or X button
+
+Grid strategy:
+  - Stats: 2×2 on mobile, 4×1 on desktop
+  - Services: 1-col mobile, 3-col desktop
+  - News: 1-col mobile, 3-col desktop
+  - Partners: scrolling marquee (infinite CSS animation)
+  - Recruitment: 1-col mobile, 4-col desktop carousel
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NAVBAR — sticky, blur backdrop
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Height: 64px desktop / 56px mobile
+- Left: logo text "CorgiBanana" (Inter 700, accent color on "Banana")
+- Center: nav links (desktop only)
+  Về chúng tôi / Dịch vụ / Case Study / Khách hàng / Tuyển dụng / Tin tức
+- Right: theme toggle icon button + "Liên hệ" filled CTA button
+- On scroll >60px: add border-bottom 1px solid var(--border)
+- Theme toggle: circle button 36×36px, shows ☀ or ☾ depending on current mode
+- Active nav link: accent color + font-weight 600
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HERO SECTION — full viewport
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Background: always dark (#0A0A0A) regardless of theme mode
+  - Subtle radial glow: rgba(249,162,35,0.08) at top-left
+Layout: centered text, max-width 780px
+Content:
+  - Small label above: "CORGIBANANA" — uppercase, tracking wide,
+    accent color, font-size 13px
+  - H1: "Giải Pháp Toàn Diện Digital Marketing – E-commerce – Retail"
+    font-size: clamp(2rem, 5vw, 3.5rem), color white
+  - Sub: "Đồng Hành Cùng Tăng Trưởng Bền Vững"
+    color: rgba(255,255,255,0.6), font-size 18px
+  - Body text: "Từ chiến lược marketing, vận hành thương mại điện tử
+    đến giải pháp bán lẻ – chúng tôi là đối tác tin cậy giúp doanh
+    nghiệp phát triển toàn diện trong kỷ nguyên số."
+    color: rgba(255,255,255,0.5)
+  - CTA row: "Tư vấn miễn phí" (filled accent) + "Xem How We Work"
+    (ghost, white border)
+Feature pills (4 cards, horizontal scroll on mobile):
+  Row of 4 small cards below CTA — white/dark bg, 1px border, 12px radius:
+  ① Giải pháp 3 trong 1 — Digital Marketing, E-commerce & Retail
+  ② Xây dựng & quản lý gian hàng TMĐT
+  ③ Đội ngũ chuyên gia 5+ năm kinh nghiệm
+  ④ Tích hợp đa kênh online & offline
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ABOUT — "Về CorgiBanana"  [id="about-us"]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+bg: var(--bg-page)
+Layout: 2-col (image left 45%, content right 55%) → stacked on mobile
+Content right:
+  - Section label: "VỀ CORGIBANANA" (accent, 12px, uppercase)
+  - H2: "Đối Tác Toàn Diện Digital Marketing, E-commerce & Retail"
+  - Body: "CorgiBanana được thành lập với sứ mệnh trở thành đối tác
+    chiến lược và đáng tin cậy, đồng hành cùng doanh nghiệp trong
+    hành trình xây dựng thương hiệu – mở rộng thị trường – tăng
+    trưởng bền vững."
+  - 2 feature rows with icon + title + description:
+    [🚀] Sứ mệnh — "5+ năm kinh nghiệm trong ngành Marketing & Thương mại"
+    [🎯] Mục tiêu — "Đồng hành tăng trưởng bền vững cho doanh nghiệp"
+Image left: placeholder div with accent bg, border-radius 12px
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STATS — "Thành công"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+bg: var(--bg-alt)
+H2: "Thành công"
+4-col grid (2×2 mobile), each card:
+  - Large number in accent: 500+ / 200+ / 95% / 24/7
+  - Label: Dự án / Hợp tác / Hài lòng / Hỗ trợ
+  - Description text (small, muted)
+  - Icon: 📊 / 🤝 / ❤️ / ⏰
+  - Hover: translateY(-4px), shadow increases
+  - Count-up animation when entering viewport (IntersectionObserver)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SERVICES — "Dịch vụ của chúng tôi"  [id="services"]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+bg: var(--bg-page)
+Section header:
+  - Label: "DỊCH VỤ CỦA CHÚNG TÔI"
+  - H2: "Giải Pháp Toàn Diện: Digital Marketing – E-commerce – Retail"
+  - Sub: "Một điểm đến – đa giải pháp: từ chiến lược marketing online,
+    quản lý gian hàng TMĐT đến tối ưu kênh bán lẻ, CorgiBanana mang
+    đến sự đồng bộ và hiệu quả bền vững cho doanh nghiệp."
+3-col card grid:
+
+Card 01 — Digital Marketing
+  Number badge "01" top-right (accent bg, white text, 8px radius)
+  Icon: 📱
+  Title: "Digital Marketing"
+  Desc: "Giải pháp end-to-end từ chiến lược → thực thi → tối ưu,
+    mang lại kết quả kinh doanh thực tế và bền vững."
+  List items (accent → bullet):
+    • Digital Marketing tổng thể: nghiên cứu thị trường, insight,
+      kế hoạch truyền thông đa kênh
+    • SEO & Content Marketing: onpage/offpage/technical, blog, PR,
+      video, social content
+    • Performance Ads: Google, Meta, TikTok, Zalo, YouTube — KPI rõ ràng
+    • Thiết kế & Nhận diện thương hiệu: logo, bộ nhận diện, banner, video
+    • Phát triển Website: website, landing page, tracking, analytics
+  "Xem thêm" ghost button bottom
+
+Card 02 — E-Commerce
+  Number badge "02"
+  Icon: 🛒
+  Title: "E-Commerce"
+  Desc: "Tối ưu toàn bộ chuỗi giá trị TMĐT từ vận hành gian hàng đến
+    phát triển doanh số, giúp thương hiệu mở rộng thị trường trong và
+    ngoài nước."
+  List items:
+    • Amazon Global: quản lý tài khoản, tối ưu Listing/Store/Advertising,
+      nghiên cứu sản phẩm ngành hàng tiềm năng
+    • Shopee, Lazada, TikTok Shop: gian hàng chuẩn, traffic & conversion,
+      chương trình khuyến mãi
+    • Quản lý đa kênh (Omnichannel): đồng bộ online–offline, kho và đơn hàng
+  "Xem thêm" ghost button
+
+Card 03 — Retail
+  Number badge "03"
+  Icon: 📦
+  Title: "Retail"
+  Desc: "Cung cấp giải pháp retail & fulfillment toàn diện, giúp doanh
+    nghiệp yên tâm từ khâu mua hàng quốc tế đến phân phối sản phẩm
+    đến tay khách hàng."
+  List items:
+    • Xuất nhập khẩu: thủ tục mua hàng quốc tế, phân phối hàng trọn gói
+    • Kho vận: quản lý nhập–xuất–tồn, bảo quản, điều phối hàng hóa
+    • Xử lý đơn hàng: tiếp nhận, đóng gói, giao nhận, chăm sóc sau bán
+  "Xem thêm" ghost button
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CASE STUDY  [id="case-study"]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+bg: var(--bg-alt)
+Section header:
+  - Label: "CASE STUDY"
+  - H2: "Câu chuyện thành công của khách hàng"
+  - Sub: "Một điểm đến – đa giải pháp: từ chiến lược marketing online,
+    quản lý gian hàng TMĐT đến tối ưu kênh bán lẻ, CorgiBanana mang
+    đến sự đồng bộ và hiệu quả bền vững cho doanh nghiệp."
+Carousel (1 slide at a time, auto-advance 5s, manual prev/next arrows):
+
+Slide 1 — Edutech Plus (Giáo dục trực tuyến)
+  "Nền tảng cung cấp khóa học kỹ năng mềm trực tuyến."
+  Thách thức: Tỷ lệ học viên bỏ học giữa chừng cao, thiếu sự tương
+    tác và động lực học tập.
+  Giải pháp: Áp dụng Gamification (game hóa) vào lộ trình học và xây
+    dựng cộng đồng học viên trên ứng dụng.
+  Kết quả: Tăng 70% tỷ lệ hoàn thành khóa học và tăng 200% lượt
+    tương tác trong cộng đồng.
+
+Slide 2 — S-Marketing Agency (Digital Marketing)
+  "Dịch vụ quảng cáo và truyền thông kỹ thuật số."
+  Thách thức: Khó khăn trong việc theo dõi và báo cáo hiệu quả của
+    nhiều chiến dịch quảng cáo đa kênh.
+  Giải pháp: Xây dựng một hệ thống Dashboard tập trung, tự động tổng
+    hợp dữ liệu từ Google Ads, Facebook Ads.
+  Kết quả: Tiết kiệm 80% thời gian làm báo cáo thủ công và giúp
+    khách hàng ra quyết định nhanh hơn 50%.
+
+Slide 3 — App Vay Nhanh (Fintech)
+  "Công nghệ tài chính - Cho vay tiêu dùng P2P."
+  Thách thức: Tỷ lệ người dùng hoàn tất hồ sơ vay thấp do quy trình
+    phức tạp, khó hiểu.
+  Giải pháp: Tối ưu hóa luồng UI/UX trên ứng dụng, đơn giản hóa các
+    bước và tích hợp AI chấm điểm tín dụng.
+  Kết quả: Tăng 45% tỷ lệ duyệt hồ sơ thành công và giảm 60% thời
+    gian chờ đợi của khách hàng.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PARTNERS — "Khách hàng & Đối tác"  [id="customer"]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+bg: var(--bg-page)
+Section header:
+  - Label: "KHÁCH HÀNG & ĐỐI TÁC"
+  - H2: "Đối Tác Chiến Lược – Cùng Nhau Phát Triển"
+  - Sub: "Chúng tôi cam kết tạo ra giá trị bền vững cho khách hàng
+    và đối tác trong mọi dự án hợp tác."
+Partner logo strip (infinite CSS marquee, pause on hover):
+  - 6 logos (use placeholder text boxes): Belmarama / Healthy Aging
+    Central / Young Sparks / MBCI / Little Etoile / Salvarity
+  - Each in white card 160×64px, object-fit: contain
+  - grayscale(1) → grayscale(0) on hover, 0.3s transition
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECRUITMENT  [id="recruitment"]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+bg: var(--bg-alt)
+Section header:
+  - Label: "TUYỂN DỤNG"
+  - H2: "Cơ hội phát triển sự nghiệp trong môi trường sáng tạo"
+  - Sub: "Chế độ đãi ngộ hấp dẫn, văn hóa cởi mở, cơ hội phát triển
+    rõ ràng."
+Job cards (4-col desktop, 2-col tablet, 1-col mobile, carousel on mobile):
+  Each card: image top (placeholder colored div 200px) + job title +
+  deadline "Exp: 31/03/2026" + orange divider 40px + hover → card
+  bg accent, all text white, smooth 0.3s
+  7 jobs:
+    1. Job Performance ADS
+    2. Job Content Marketing
+    3. Job Senior UX UI Design
+    4. Job Graphic Design
+    5. Job Social Content Marketing
+    6. Job General Accountant
+    7. Job Cosmetics and Pharmaceutical Training Specialist
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEWS  [id="news"]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+bg: var(--bg-page)
+Section header:
+  - Label: "TIN TỨC"
+  - H2: "Cập Nhật Xu Hướng Digital Marketing"
+3-col grid (1-col mobile):
+  Article 1 — an ninh mạng / 03 Th10
+    Title: Cảnh báo lỗ hổng "Silent Host": Hàng triệu thiết bị nhà
+      thông minh có nguy cơ bị chiếm quyền điều khiển
+    Author: CorgiBanana | No Comments
+
+  Article 2 — thị trường / 03 Th10
+    Title: Bùng nổ "Kinh tế Sáng tạo theo Yêu cầu": Nền tảng AI
+      đang thay đổi cách các doanh nghiệp sản xuất nội dung
+    Author: CorgiBanana | No Comments
+
+  Article 3 — tin tức / 03 Th10
+    Title: Google ra mắt "Orion AI": Trợ lý AI thế hệ mới có khả
+      năng dự đoán và tự động hóa cuộc sống của bạn
+    Author: CorgiBanana | No Comments
+
+Each card: image placeholder top (235px, bg-alt) + date badge
+(bottom-left, accent bg) + category badge (pill) + title + meta row
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FOOTER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+bg: always #0A0A0A (dark regardless of theme)
+4-col desktop, 2-col tablet, 1-col mobile:
+
+Col 1 — Brand (wider)
+  Logo: "CorgiBanana" (accent on Banana)
+  Desc: "Từ chiến lược marketing, vận hành thương mại điện tử đến
+    giải pháp bán lẻ – chúng tôi là đối tác tin cậy giúp doanh
+    nghiệp phát triển toàn diện trong kỷ nguyên số"
+  Address: Số 318 đường Quang Trung, Phường Phan Đình Phùng,
+    Tỉnh Thái Nguyên, Việt Nam
+  Phone: +123 456 789
+  Email: hr@corgibanana.com
+  Social icons: Facebook / YouTube / LinkedIn / TikTok
+
+Col 2 — Liên kết nhanh
+  Dịch vụ / Giới thiệu / Portfolio / Tuyển dụng
+
+Col 3 — Dịch vụ
+  Digital Marketing / E-Commerce / Retail
+
+Col 4 — Chính sách
+  Chính sách bảo mật / Điều khoản sử dụng
+
+Bottom bar: "© 2025 CorgiBanana. All rights reserved."
+Scroll-to-top button: fixed bottom-right, 44×44px circle, accent bg,
+  appears after 300px scroll
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTACT MODAL — triggered by "Liên hệ" and "Tư vấn miễn phí"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Overlay (rgba(0,0,0,0.6)) + centered modal card (max-width 640px):
+  Header: "Yêu cầu tư vấn" + X close button
+  Form fields:
+    - Họ tên * (text, full-width)
+    - Số điện thoại * + Email * (side by side, 50/50)
+    - Công ty (text, full-width)
+    - Dịch vụ quan tâm (checkboxes inline):
+      ☐ Digital Marketing  ☐ E-Commerce  ☐ Retail
+    - Lời nhắn (textarea 4 rows)
+    - Submit: "Gửi" button full-width, accent bg
+  Close on overlay click or X
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ANIMATIONS (subtle, performance-safe)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Scroll reveal: IntersectionObserver, threshold 0.1
+  .reveal { opacity:0; transform:translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  Stagger children with animation-delay: 0s / 0.1s / 0.2s / 0.3s
+- Stats counter: count-up from 0 when entering viewport
+- Card hover: translateY(-3px) + shadow-lg, 0.25s ease
+- Navbar scroll: border-bottom fades in smoothly
+- Partner marquee: CSS @keyframes scroll, infinite, 30s
+- No layout animations that cause reflow
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+THEME INDICATOR (small, bottom-left)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fixed pill showing current state:
+  [●] ☀️ Sáng · tự động (HH:MM)   or   [●] 🌙 Tối · thủ công
+  bg: var(--bg-card), border 1px solid var(--border), border-radius 100px
+  font-size 12px, padding 6px 14px, z-index 999
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TECHNICAL REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Single .html file, no external dependencies except Google Fonts
+- Semantic HTML5: <header> <nav> <main> <section> <footer>
+- ARIA labels on all interactive elements
+- Keyboard navigable (focus rings visible)
+- Images: use <div> placeholders with appropriate aspect ratios
+  and bg colors (--bg-alt or --accent-soft) where real images
+  would appear — add descriptive aria-label attributes
+- All IDs for nav anchor links:
+  #about-us / #services / #case-study / #customer / #recruitment / #news
+- Smooth scroll: html { scroll-behavior: smooth; }
+- No inline styles except where CSS variables can't reach
+- Output: complete, valid, copy-paste-ready HTML

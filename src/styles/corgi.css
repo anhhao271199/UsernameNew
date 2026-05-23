@@ -1,0 +1,140 @@
+/* CorgiBanana Theme Variables */
+[data-theme="light"] {
+  --cb-bg-page: #F8F8F6;
+  --cb-bg-card: #FFFFFF;
+  --cb-bg-alt: #F2F2F0;
+  --cb-text-primary: #111111;
+  --cb-text-secondary: #555555;
+  --cb-text-muted: #888888;
+  --cb-accent: #F9A223;
+  --cb-accent-hover: #E8920F;
+  --cb-accent-soft: rgba(249, 162, 35, 0.10);
+  --cb-border: rgba(0, 0, 0, 0.08);
+  --cb-nav-bg: rgba(248, 248, 246, 0.92);
+  --cb-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.06);
+  --cb-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --cb-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.10);
+}
+
+[data-theme="dark"] {
+  --cb-bg-page: #0F0F0F;
+  --cb-bg-card: #1A1A1A;
+  --cb-bg-alt: #141414;
+  --cb-text-primary: #F0F0F0;
+  --cb-text-secondary: #A0A0A0;
+  --cb-text-muted: #666666;
+  --cb-accent: #F9A223;
+  --cb-accent-hover: #FFB347;
+  --cb-accent-soft: rgba(249, 162, 35, 0.12);
+  --cb-border: rgba(255, 255, 255, 0.08);
+  --cb-nav-bg: rgba(15, 15, 15, 0.92);
+  --cb-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.3);
+  --cb-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --cb-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Smooth transitions */
+.cb-root *,
+.cb-root *::before,
+.cb-root *::after {
+  transition: background-color 0.7s ease, color 0.7s ease,
+              border-color 0.7s ease;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease !important;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s !important; }
+.reveal-delay-2 { transition-delay: 0.2s !important; }
+.reveal-delay-3 { transition-delay: 0.3s !important; }
+.reveal-delay-4 { transition-delay: 0.4s !important; }
+
+/* Partners marquee */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  animation: marquee 30s linear infinite;
+  width: max-content;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* Scroll to top button */
+.scroll-top-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease !important;
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile drawer */
+@keyframes drawerIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes drawerOut {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+.drawer-enter {
+  animation: drawerIn 0.3s ease forwards;
+}
+
+.drawer-exit {
+  animation: drawerOut 0.3s ease forwards;
+}
+
+/* Card hover */
+.cb-card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.cb-card-hover:hover {
+  transform: translateY(-3px);
+}
+
+/* Carousel */
+.case-slide {
+  display: none;
+}
+
+.case-slide.active {
+  display: flex;
+}
+
+/* Grayscale logos */
+.partner-logo-img {
+  filter: grayscale(1);
+  transition: filter 0.3s ease !important;
+}
+
+.partner-logo-img:hover {
+  filter: grayscale(0);
+}
+
+/* Focus ring */
+.cb-root :focus-visible {
+  outline: 2px solid #F9A223;
+  outline-offset: 2px;
+}
