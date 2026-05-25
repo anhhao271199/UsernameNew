@@ -108,7 +108,7 @@ export function AboutPage() {
           <motion.p
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.2 }}
-            style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, maxWidth: '520px' }}
+            style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, maxWidth: '620px' }}
           >
             {lang === 'vi'
               ? 'CorgiBanana được thành lập với sứ mệnh trở thành đối tác chiến lược đáng tin cậy, đồng hành cùng doanh nghiệp trong hành trình phát triển bền vững.'

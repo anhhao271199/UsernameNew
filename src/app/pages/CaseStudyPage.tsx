@@ -90,7 +90,7 @@ export function CaseStudyPage() {
 
           <motion.p
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.2 }}
-            style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, maxWidth: '540px', margin: '0 auto' }}>
+            style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, maxWidth: '640px', margin: '0 auto' }}>
             {lang === 'vi'
               ? 'Những kết quả thực tế từ các dự án CorgiBanana đã triển khai trên nhiều ngành hàng.'
               : 'Real results from CorgiBanana projects delivered across multiple industries.'}

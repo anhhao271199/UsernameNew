@@ -158,7 +158,7 @@ export function ClientsPage() {
 
           <motion.p
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}
-            style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.85)', maxWidth: '480px', marginBottom: '40px', lineHeight: 1.7 }}>
+            style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: 'rgba(255,255,255,0.85)', maxWidth: '500px', marginBottom: '40px', lineHeight: 1.7 }}>
             {lang === 'vi'
               ? 'Chúng tôi tự hào đồng hành cùng hơn 200+ thương hiệu và doanh nghiệp trên hành trình tăng trưởng số.'
               : 'We are proud to partner with 200+ brands and businesses on their digital growth journey.'}

@@ -126,7 +126,7 @@ export function Services() {
               fontSize: 'clamp(13px, 1.4vw, 16px)',
               color: 'rgba(255,255,255,0.82)',
               lineHeight: 1.7,
-              maxWidth: '560px',
+              maxWidth: '660px',
             }}
           >
             {t.body}
