@@ -7,7 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 import type { OutletContextType } from '../Root';
 
-const ABOUT_BANNER = 'https://images.unsplash.com/photo-1497366216548-37526070297c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080';
+const ABOUT_BANNER = 'https://res.cloudinary.com/da69eampk/image/upload/v1779683457/doi-tac-toan-dien_vzyghe.png';
 
 const values = {
   vi: [
