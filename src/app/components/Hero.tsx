@@ -68,7 +68,7 @@ export function Hero({ onOpenContact }: HeroProps) {
         position: 'relative',
       }}
     >
-      <ParticleBg />
+      <SpotlightBg />
 
       {/* ── TEXT BLOCK ── */}
       <div style={{ width: '100%', maxWidth: '1160px', padding: '0 24px', boxSizing: 'border-box', position: 'relative', zIndex: 1 }}>
@@ -246,11 +246,12 @@ export function Hero({ onOpenContact }: HeroProps) {
   );
 }
 
-/* ── Tech Grid Background ── */
-function ParticleBg() {
+/* ── Spotlight Background ── */
+function SpotlightBg() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef    = useRef<number>(0);
   const mouseRef  = useRef({ x: -999, y: -999 });
+  const currentRef = useRef({ x: -999, y: -999 });
 
   useEffect(() => {
     const canvas = canvasRef.current as any;
@@ -261,31 +262,7 @@ function ParticleBg() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d')!;
-    let W = 0, H = 0, frame = 0;
-
-    const NODE_COUNT  = 55;
-    const MAX_DIST    = 130;
-    const PULSE_SPEED = 0.018;
-
-    type Node = {
-      x: number; y: number;
-      vx: number; vy: number;
-      phase: number;
-      r: number;
-    };
-
-    let nodes: Node[] = [];
-
-    const buildNodes = () => {
-      nodes = Array.from({ length: NODE_COUNT }, () => ({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.22,
-        vy: (Math.random() - 0.5) * 0.22,
-        phase: Math.random() * Math.PI * 2,
-        r: Math.random() * 1.4 + 0.8,
-      }));
-    };
+    let W = 0, H = 0;
 
     const resize = () => {
       W = canvas.offsetWidth;
@@ -293,114 +270,74 @@ function ParticleBg() {
       canvas.width  = W * devicePixelRatio;
       canvas.height = H * devicePixelRatio;
       ctx.scale(devicePixelRatio, devicePixelRatio);
-      buildNodes();
     };
 
-    const dist = (
-      a: { x: number; y: number },
-      b: { x: number; y: number }
-    ) => Math.hypot(a.x - b.x, a.y - b.y);
-
     const draw = () => {
-      frame++;
       ctx.clearRect(0, 0, W, H);
 
-      // ── Move nodes ──
-      for (const n of nodes) {
-        n.phase += PULSE_SPEED;
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < -10) n.x = W + 10;
-        if (n.x > W + 10) n.x = -10;
-        if (n.y < -10) n.y = H + 10;
-        if (n.y > H + 10) n.y = -10;
-      }
+      const target = mouseRef.current;
+      const cur    = currentRef.current;
 
-      // ── Subtle dot-grid backdrop ──
-      const step = 42;
-      ctx.fillStyle = 'rgba(249,162,35,0.06)';
-      for (let x = step; x < W; x += step) {
-        for (let y = step; y < H; y += step) {
-          ctx.beginPath();
-          ctx.arc(x, y, 0.7, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
+      // Smooth follow
+      cur.x += (target.x - cur.x) * 0.08;
+      cur.y += (target.y - cur.y) * 0.08;
 
-      const mouse = mouseRef.current;
+      const active = target.x > 0;
 
-      // ── Edges between close nodes ──
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const d = dist(nodes[i], nodes[j]);
-          if (d < MAX_DIST) {
-            const t = 1 - d / MAX_DIST;
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(249,162,35,${t * 0.14})`;
-            ctx.lineWidth = t * 1.1;
-            ctx.stroke();
-          }
-        }
-      }
+      if (active) {
+        const r = Math.min(W, H) * 0.6;
 
-      // ── Mouse-proximity: brighten nearby edges ──
-      for (let i = 0; i < nodes.length; i++) {
-        const dm = dist(nodes[i], mouse);
-        if (dm < 160) {
-          const nt = 1 - dm / 160;
-          for (let j = i + 1; j < nodes.length; j++) {
-            const d = dist(nodes[i], nodes[j]);
-            if (d < MAX_DIST * 1.5) {
-              const et = (1 - d / (MAX_DIST * 1.5)) * nt;
-              ctx.beginPath();
-              ctx.moveTo(nodes[i].x, nodes[i].y);
-              ctx.lineTo(nodes[j].x, nodes[j].y);
-              ctx.strokeStyle = `rgba(249,162,35,${et * 0.52})`;
-              ctx.lineWidth = et * 1.8;
-              ctx.stroke();
-            }
-          }
-        }
-      }
+        // Subtle dark vignette over whole canvas
+        ctx.fillStyle = 'rgba(15,23,42,0.04)';
+        ctx.fillRect(0, 0, W, H);
 
-      // ── Draw nodes ──
-      for (const n of nodes) {
-        const dm    = dist(n, mouse);
-        const near  = Math.max(0, 1 - dm / 160);
-        const pulse = 0.5 + 0.5 * Math.sin(n.phase);
-        const alpha = 0.10 + pulse * 0.08 + near * 0.55;
-        const r     = n.r + near * 2.5;
-
+        // Punch a transparent hole at cursor (erase the vignette)
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-out';
+        const punch = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, r);
+        punch.addColorStop(0,   'rgba(0,0,0,0.04)');
+        punch.addColorStop(0.5, 'rgba(0,0,0,0.02)');
+        punch.addColorStop(1,   'rgba(0,0,0,0)');
         ctx.beginPath();
-        ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(249,162,35,${alpha})`;
+        ctx.arc(cur.x, cur.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = punch;
+        ctx.fill();
+        ctx.restore();
+
+        // Warm amber glow at cursor center
+        const glow = ctx.createRadialGradient(cur.x, cur.y, 0, cur.x, cur.y, r * 0.65);
+        glow.addColorStop(0,   'rgba(249,162,35,0.07)');
+        glow.addColorStop(0.45, 'rgba(249,162,35,0.025)');
+        glow.addColorStop(1,   'rgba(249,162,35,0)');
+        ctx.beginPath();
+        ctx.arc(cur.x, cur.y, r * 0.65, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
         ctx.fill();
 
-        // Soft halo on hover proximity
-        if (near > 0.06) {
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 5, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(249,162,35,${near * 0.20})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-      }
+        // Center dot
+        ctx.beginPath();
+        ctx.arc(cur.x, cur.y, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(249,162,35,0.5)';
+        ctx.fill();
 
-      // ── Horizontal scan line (subtle tech feel) ──
-      const scanY = (frame * 0.35) % H;
-      ctx.strokeStyle = 'rgba(249,162,35,0.045)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, scanY);
-      ctx.lineTo(W, scanY);
-      ctx.stroke();
+        // Inner ring
+        ctx.beginPath();
+        ctx.arc(cur.x, cur.y, 16, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(249,162,35,0.16)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(cur.x, cur.y, 38, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(249,162,35,0.06)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
 
       rafRef.current = requestAnimationFrame(draw);
     };
 
-    // Touch support
     const onTouchMove = (e: TouchEvent) => {
       const rect = canvas.getBoundingClientRect();
       const t = e.touches[0];

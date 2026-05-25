@@ -19,7 +19,7 @@ export function Services() {
       id="services"
       aria-label="Our Services"
       style={{
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'var(--cb-bg-page)',
         padding: '0 0 120px',
         position: 'relative',
         overflow: 'hidden',
@@ -36,7 +36,6 @@ export function Services() {
           marginBottom: '80px',
         }}
       >
-        {/* Background image — absolute fill */}
         <ImageWithFallback
           src={SERVICES_BANNER}
           alt="Digital Marketing E-commerce Banner"
@@ -61,7 +60,7 @@ export function Services() {
           }}
         />
 
-        {/* Text overlay — relative so it flows with content height */}
+        {/* Text overlay */}
         <div
           style={{
             position: 'relative',
@@ -76,7 +75,6 @@ export function Services() {
             boxSizing: 'border-box',
           }}
         >
-          {/* Eyebrow */}
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -95,7 +93,6 @@ export function Services() {
             {t.eyebrow}
           </motion.p>
 
-          {/* Title */}
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -115,7 +112,6 @@ export function Services() {
             {t.h2}
           </motion.h2>
 
-          {/* Body */}
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -166,8 +162,8 @@ export function Services() {
                 }}
                 style={{
                   borderRadius: '20px',
-                  border: '1px solid rgba(0,0,0,0.07)',
-                  backgroundColor: '#FFFFFF',
+                  border: '1px solid var(--cb-border)',
+                  backgroundColor: 'var(--cb-bg-card)',
                   boxShadow: '0 4px 24px rgba(0,0,0,0.05)',
                   overflow: 'hidden',
                   cursor: 'pointer',
@@ -185,8 +181,8 @@ export function Services() {
                 <div
                   style={{
                     padding: '32px 32px 24px',
-                    background: `linear-gradient(135deg, ${color}10 0%, ${color}03 100%)`,
-                    borderBottom: '1px solid rgba(0,0,0,0.04)',
+                    background: `linear-gradient(135deg, ${color}12 0%, ${color}04 100%)`,
+                    borderBottom: '1px solid var(--cb-border)',
                     position: 'relative',
                   }}
                 >
@@ -199,7 +195,7 @@ export function Services() {
                       width: '40px',
                       height: '40px',
                       borderRadius: '12px',
-                      backgroundColor: '#fff',
+                      backgroundColor: 'var(--cb-bg-card)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -207,7 +203,7 @@ export function Services() {
                       fontSize: '16px',
                       fontWeight: 800,
                       color: color,
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                     }}
                   >
                     {svc.number}
@@ -235,7 +231,7 @@ export function Services() {
                       fontFamily: 'Inter, sans-serif',
                       fontSize: '20px',
                       fontWeight: 700,
-                      color: '#0F172A',
+                      color: 'var(--cb-text-primary)',
                       marginBottom: '12px',
                       lineHeight: 1.3,
                     }}
@@ -249,8 +245,8 @@ export function Services() {
                       <Star
                         key={j}
                         size={13}
-                        fill={j < 4 ? '#F9A223' : '#E5E7EB'}
-                        color={j < 4 ? '#F9A223' : '#E5E7EB'}
+                        fill={j < 4 ? '#F9A223' : 'var(--cb-border)'}
+                        color={j < 4 ? '#F9A223' : 'var(--cb-border)'}
                         strokeWidth={1}
                       />
                     ))}
@@ -260,7 +256,7 @@ export function Services() {
                         fontFamily: 'Inter, sans-serif',
                         fontSize: '12px',
                         fontWeight: 600,
-                        color: '#94A3B8',
+                        color: 'var(--cb-text-muted)',
                       }}
                     >
                       4.0
@@ -274,7 +270,7 @@ export function Services() {
                     style={{
                       fontFamily: 'Inter, sans-serif',
                       fontSize: '14px',
-                      color: '#475569',
+                      color: 'var(--cb-text-secondary)',
                       lineHeight: 1.7,
                       marginBottom: '20px',
                     }}
@@ -302,7 +298,7 @@ export function Services() {
                           alignItems: 'flex-start',
                           fontFamily: 'Inter, sans-serif',
                           fontSize: '13px',
-                          color: '#64748B',
+                          color: 'var(--cb-text-muted)',
                           lineHeight: 1.6,
                         }}
                       >
@@ -329,7 +325,7 @@ export function Services() {
                       justifyContent: 'space-between',
                       paddingTop: '20px',
                       marginTop: '20px',
-                      borderTop: '1px solid rgba(0,0,0,0.06)',
+                      borderTop: '1px solid var(--cb-border)',
                     }}
                   >
                     <span
@@ -352,12 +348,9 @@ export function Services() {
       </div>
 
       <style>{`
-        /* Banner height mobile */
         @media (max-width: 640px) {
           .services-banner { min-height: 0 !important; }
         }
-
-        /* Cards: 3 col → 2 col tablet → 1 col mobile */
         @media (max-width: 1024px) and (min-width: 641px) {
           .services-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 20px !important; }
         }
