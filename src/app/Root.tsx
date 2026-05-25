@@ -111,8 +111,10 @@ function RootInner() {
         #chatbase-bubble-window {
           bottom: 144px !important;
           right: 24px !important;
+          width: 380px !important;
+          height: 520px !important;
           max-width: calc(100vw - 32px) !important;
-          max-height: calc(100vh - 180px) !important;
+          max-height: calc(100vh - 200px) !important;
         }
 
         @media (max-width: 480px) {
