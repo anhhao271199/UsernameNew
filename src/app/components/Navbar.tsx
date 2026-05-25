@@ -98,7 +98,6 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
     smoothScrollToTop(container);
   };
 
-
   // ── Mobile: fix Chatbase popup position (JS override inline styles) + overlay ──
   useEffect(() => {
     if (window.innerWidth >= 768) return;
@@ -451,15 +450,13 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
           .hidden-mobile { display: none !important; }
           .show-mobile   { display: flex !important; }
 
-          /* Mobile: scroll-top cùng hàng thanh thời gian, bên trái Chatbase */
+          /* Mobile: scroll-top căn giữa ThemeIndicator (left:16px) và Chatbase (right:16px) */
           .scroll-top-btn {
             bottom: 16px !important;
-            right: 100px !important;
+            right: 76px !important;
           }
 
           /* ── FIX: popup Chatbase mobile ── */
-
-          /* Popup Chatbase: bottom sheet trên mobile */
           #chatbase-bubble-window {
             position: fixed !important;
             top: auto !important;
@@ -472,7 +469,6 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
             height: 88dvh !important;
             max-height: 88dvh !important;
             border-radius: 20px 20px 0 0 !important;
-            background: #ffffff !important;
             box-shadow: 0 -8px 40px rgba(0,0,0,0.2) !important;
             overflow: hidden !important;
             transform: none !important;
@@ -495,6 +491,9 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
         }
         @media (min-width: 768px) {
           .show-mobile { display: none !important; }
+          #chatbase-bubble-window {
+            background: unset !important;
+          }
         }
       `}</style>
     </>

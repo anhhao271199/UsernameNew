@@ -42,6 +42,30 @@ function RootInner() {
     };
   }, []);
 
+  useEffect(() => {
+    const fixDesktopPopup = (win: HTMLElement) => {
+      win.style.setProperty('width', '380px', 'important');
+      win.style.setProperty('height', '520px', 'important');
+      win.style.setProperty('max-width', 'calc(100vw - 32px)', 'important');
+      win.style.setProperty('max-height', 'calc(100vh - 200px)', 'important');
+      win.style.setProperty('bottom', '144px', 'important');
+      win.style.setProperty('right', '24px', 'important');
+      win.style.setProperty('left', 'auto', 'important');
+      win.style.setProperty('top', 'auto', 'important');
+      win.style.setProperty('border-radius', '12px', 'important');
+    };
+
+    const poll = setInterval(() => {
+      if (window.innerWidth < 768) return;
+      const win = document.getElementById('chatbase-bubble-window');
+      if (!win) return;
+      const h = win.getBoundingClientRect().height;
+      if (h > 50) fixDesktopPopup(win);
+    }, 150);
+
+    return () => { clearInterval(poll); };
+  }, []);
+
   return (
     <div
       className="cb-root"
@@ -89,7 +113,7 @@ function RootInner() {
         .cb-card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
         .cb-card-hover:hover { transform: translateY(-4px); box-shadow: var(--cb-shadow-lg) !important; }
 
-        /* Đẩy nút Chatbase lên trên nút scroll-to-top */
+        /* Desktop: Chatbase button trên scroll-to-top */
         #chatbase-bubble-button {
           bottom: 80px !important;
           right: 24px !important;
@@ -105,20 +129,24 @@ function RootInner() {
           animation: cbPulse 2.2s ease-in-out infinite !important;
         }
 
-        /* Popup */
-        #chatbase-bubble-window {
-          bottom: 144px !important;
-          right: 24px !important;
-          width: 380px !important;
-          height: 520px !important;
-          max-width: calc(100vw - 32px) !important;
-          max-height: calc(100vh - 200px) !important;
+        /* Desktop: Popup position */
+        @media (min-width: 768px) {
+          #chatbase-bubble-window {
+            bottom: 144px !important;
+            right: 24px !important;
+            width: 380px !important;
+            height: 520px !important;
+            max-width: calc(100vw - 32px) !important;
+            max-height: calc(100vh - 200px) !important;
+          }
         }
 
-        @media (max-width: 768px) {
+        /* Mobile: tất cả 3 nút cùng bottom: 16px */
+        @media (max-width: 767px) {
           #chatbase-bubble-button {
-            bottom: 76px !important;
+            bottom: 16px !important;
             right: 16px !important;
+            z-index: 9999 !important;
           }
           #chatbase-bubble-window {
             right: 0 !important;
