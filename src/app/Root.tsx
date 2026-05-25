@@ -8,7 +8,7 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { ContactModal } from './components/ContactModal';
 import { ThemeIndicator } from './components/ThemeIndicator';
-import { ScrollToTop } from './components/ScrollToTop';
+
 
 export interface OutletContextType {
   onOpenContact: () => void;
