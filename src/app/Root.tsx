@@ -97,9 +97,9 @@ function RootInner() {
 
         /* Pulse animation */
         @keyframes cbPulse {
-          0%   { box-shadow: 0 0 0 0 rgba(249,162,35,0.6); }
-          70%  { box-shadow: 0 0 0 14px rgba(249,162,35,0); }
-          100% { box-shadow: 0 0 0 0 rgba(249,162,35,0); }
+          0%   { box-shadow: 0 0 0 0 #f9a22399; }
+          70%  { box-shadow: 0 0 0 14px #f9a22300; }
+          100% { box-shadow: 0 0 0 0 #f9a22300; }
         }
         #chatbase-bubble-button {
           animation: cbPulse 2.2s ease-in-out infinite !important;

@@ -69,7 +69,6 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
     };
   }, []);
 
-  // ── AUTO SCROLL TO TOP KHI ĐỔI TRANG ──
   useEffect(() => {
     const container = scrollContainerRef.current || getScrollContainer();
     if (container) {
@@ -99,6 +98,76 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
     smoothScrollToTop(container);
   };
 
+  // ── Overlay backdrop cho Chatbase popup trên mobile ──
+  useEffect(() => {
+    if (window.innerWidth >= 768) return;
+
+    const OVERLAY_ID = 'cb-mobile-overlay';
+
+    const getOrCreateOverlay = () => {
+      let el = document.getElementById(OVERLAY_ID);
+      if (!el) {
+        el = document.createElement('div');
+        el.id = OVERLAY_ID;
+        Object.assign(el.style, {
+          position: 'fixed',
+          inset: '0',
+          top: '0',
+          left: '0',
+          right: '0',
+          bottom: '0',
+          background: 'rgba(0,0,0,0.55)',
+          zIndex: '2147483640',
+          pointerEvents: 'none',
+          transition: 'opacity 0.25s ease',
+          opacity: '0',
+        });
+        // Insert BEFORE chatbase window so it sits behind popup but above page
+        document.body.insertBefore(el, document.body.firstChild);
+      }
+      return el;
+    };
+
+    const showOverlay = () => {
+      const el = getOrCreateOverlay();
+      el.style.opacity = '1';
+    };
+
+    const hideOverlay = () => {
+      const el = document.getElementById(OVERLAY_ID);
+      if (el) el.style.opacity = '0';
+    };
+
+    const checkChatbase = () => {
+      const win = document.getElementById('chatbase-bubble-window');
+      if (!win) { hideOverlay(); return; }
+      const style = getComputedStyle(win);
+      const isVisible =
+        style.display !== 'none' &&
+        style.visibility !== 'hidden' &&
+        style.opacity !== '0' &&
+        win.offsetHeight > 10;
+      isVisible ? showOverlay() : hideOverlay();
+    };
+
+    const observer = new MutationObserver(checkChatbase);
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class', 'hidden'],
+    });
+
+    // Also poll every 300ms as fallback (Chatbase may use internal state)
+    const interval = setInterval(checkChatbase, 300);
+
+    return () => {
+      observer.disconnect();
+      clearInterval(interval);
+      document.getElementById(OVERLAY_ID)?.remove();
+    };
+  }, []);
+
   const handleLogoClick = (e: React.MouseEvent) => {
     if (location.pathname === '/') {
       e.preventDefault();
@@ -106,7 +175,6 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
     }
   };
 
-  /* ─── Language Toggle pill ─── */
   const LangToggle = ({ inDrawer = false }: { inDrawer?: boolean }) => (
     <button
       onClick={toggleLang}
@@ -372,11 +440,12 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
       <button
         onClick={scrollToTop}
         aria-label="Scroll to top"
+        className="scroll-top-btn"
         style={{
           position: 'fixed',
           bottom: '28px',
           right: '24px',
-          zIndex: 9999,
+          zIndex: 9998,
           width: '48px',
           height: '48px',
           borderRadius: '50%',
@@ -413,6 +482,55 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
         @media (max-width: 767px) {
           .hidden-mobile { display: none !important; }
           .show-mobile   { display: flex !important; }
+
+          /* ── FIX: scroll-to-top nằm TRÁI của nút chat Chatbase ── */
+          /* Chatbase chiếm góc bottom-right, ta dịch sang trái 68px */
+          .scroll-top-btn {
+            bottom: 20px !important;
+            right: 88px !important;
+          }
+
+          /* ── FIX: popup Chatbase mobile ── */
+          /* Overlay backdrop được inject bằng JS */
+          #cb-mobile-overlay {
+            position: fixed !important;
+            inset: 0 !important;
+            background: rgba(0,0,0,0.55) !important;
+            z-index: 2147483640 !important;
+            pointer-events: none !important;
+          }
+          /* Container popup: full-width bottom sheet */
+          #chatbase-bubble-window {
+            position: fixed !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            top: auto !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            min-width: 100vw !important;
+            height: 88dvh !important;
+            border-radius: 20px 20px 0 0 !important;
+            background: #ffffff !important;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.25) !important;
+            overflow: hidden !important;
+            transform: translateX(0) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            inset: auto 0 0 0 !important;
+          }
+          /* Iframe bên trong fill toàn bộ */
+          #chatbase-bubble-window iframe {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 20px 20px 0 0 !important;
+            margin: 0 !important;
+          }
         }
         @media (min-width: 768px) {
           .show-mobile { display: none !important; }
