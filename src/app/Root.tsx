@@ -109,6 +109,12 @@ function RootInner() {
 
         .cb-card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
         .cb-card-hover:hover { transform: translateY(-4px); box-shadow: var(--cb-shadow-lg) !important; }
+
+        /* Đẩy nút Chatbase lên trên nút scroll-to-top */
+        #chatbase-bubble-button {
+          bottom: 80px !important;
+          right: 24px !important;
+        }
       `}</style>
     </div>
   );
