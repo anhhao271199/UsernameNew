@@ -651,7 +651,6 @@ export function RecruitmentPage() {
       {/* ── CTA / Apply Banner ── */}
       <section style={{ background: 'linear-gradient(135deg, #F9A223 0%, #F59E0B 100%)', padding: '80px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <Users size={40} color="#fff" strokeWidth={1.5} style={{ marginBottom: '20px', opacity: 0.9 }} />
           <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: 800, color: '#fff', marginBottom: '16px', letterSpacing: '-0.02em' }}>
             {lang === 'vi' ? 'Không tìm thấy vị trí phù hợp?' : "Don't see a matching position?"}
           </h2>
