@@ -20,7 +20,7 @@ function RootInner() {
   const { theme, source, toggle, resetToAuto, currentTime } = useTheme();
 
   useEffect(() => {
-    if (!window.chatbase || window.chatbase('getState') !== 'initialized') {
+    if (!window.chatbase || (window as any).chatbase('getState') !== 'initialized') {
       (window as any).chatbase = (...args: any[]) => {
         if (!(window as any).chatbase.q) (window as any).chatbase.q = [];
         (window as any).chatbase.q.push(args);
@@ -110,20 +110,47 @@ function RootInner() {
         .cb-card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
         .cb-card-hover:hover { transform: translateY(-4px); box-shadow: var(--cb-shadow-lg) !important; }
 
-        /* Đẩy nút Chatbase lên trên nút scroll-to-top */
+        /* ── Chatbase button: nằm trên scroll-to-top, căn giữa ── */
         #chatbase-bubble-button {
           bottom: 80px !important;
           right: 24px !important;
+          width: 52px !important;
+          height: 52px !important;
         }
 
-        /* Animation nhấp nháy cho nút Chatbase */
+        /* Animation nhấp nháy vòng tròn cam */
         @keyframes chatbasePulse {
-          0% { box-shadow: 0 0 0 0 rgba(249,162,35,0.7); }
-          70% { box-shadow: 0 0 0 12px rgba(249,162,35,0); }
+          0%   { box-shadow: 0 0 0 0 rgba(249,162,35,0.7); }
+          70%  { box-shadow: 0 0 0 14px rgba(249,162,35,0); }
           100% { box-shadow: 0 0 0 0 rgba(249,162,35,0); }
         }
         #chatbase-bubble-button {
-          animation: chatbasePulse 2s ease-in-out infinite !important;
+          animation: chatbasePulse 2.2s ease-in-out infinite !important;
+        }
+
+        /* Popup chat responsive */
+        #chatbase-bubble-window {
+          right: 24px !important;
+          bottom: 144px !important;
+          width: 380px !important;
+          max-width: calc(100vw - 32px) !important;
+          max-height: calc(100vh - 180px) !important;
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+          #chatbase-bubble-button {
+            bottom: 76px !important;
+            right: 16px !important;
+            width: 46px !important;
+            height: 46px !important;
+          }
+          #chatbase-bubble-window {
+            right: 8px !important;
+            left: 8px !important;
+            width: auto !important;
+            bottom: 134px !important;
+          }
         }
       `}</style>
     </div>
