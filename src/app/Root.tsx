@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, ScrollRestoration } from 'react-router';
 import '../styles/fonts.css';
 import '../styles/corgi.css';
@@ -18,6 +18,30 @@ export interface OutletContextType {
 function RootInner() {
   const [contactOpen, setContactOpen] = useState(false);
   const { theme, source, toggle, resetToAuto, currentTime } = useTheme();
+
+  useEffect(() => {
+    if (!window.chatbase || window.chatbase('getState') !== 'initialized') {
+      (window as any).chatbase = (...args: any[]) => {
+        if (!(window as any).chatbase.q) (window as any).chatbase.q = [];
+        (window as any).chatbase.q.push(args);
+      };
+      (window as any).chatbase = new Proxy((window as any).chatbase, {
+        get(target: any, prop: string) {
+          if (prop === 'q') return target.q;
+          return (...args: any[]) => target(prop, ...args);
+        },
+      });
+    }
+    const script = document.createElement('script');
+    script.src = 'https://www.chatbase.co/embed.min.js';
+    script.id = 'T_TTBrq4_rAiKf_STUjAS';
+    script.setAttribute('domain', 'www.chatbase.co');
+    document.body.appendChild(script);
+    return () => {
+      const existing = document.getElementById('T_TTBrq4_rAiKf_STUjAS');
+      if (existing) existing.remove();
+    };
+  }, []);
 
   return (
     <div
@@ -67,15 +91,12 @@ function RootInner() {
         a { text-decoration: none; }
         img { max-width: 100%; }
 
-        /* ── Global mobile baseline ── */
         @media (max-width: 767px) {
           .navbar-links { display: none !important; }
         }
 
-        /* ── Tránh tràn ngang toàn trang ── */
         html, body { overflow-x: hidden; }
 
-        /* ── Reveal animation ── */
         .reveal {
           opacity: 0;
           transform: translateY(24px);
@@ -86,7 +107,6 @@ function RootInner() {
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
 
-        /* ── Card hover ── */
         .cb-card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
         .cb-card-hover:hover { transform: translateY(-4px); box-shadow: var(--cb-shadow-lg) !important; }
       `}</style>
