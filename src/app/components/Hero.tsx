@@ -41,14 +41,14 @@ export function Hero({ onOpenContact }: HeroProps) {
     if (canvas?.__mouseRef) {
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
-      canvas.__mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top, active: true };
+      canvas.__mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     const canvas = sectionRef.current?.querySelector('canvas') as any;
     if (canvas?.__mouseRef) {
-      canvas.__mouseRef.current = { x: -999, y: -999, active: false };
+      canvas.__mouseRef.current = { x: -999, y: -999 };
     }
   }, []);
 
@@ -246,11 +246,11 @@ export function Hero({ onOpenContact }: HeroProps) {
   );
 }
 
-/* ── Particle Flow Background ── */
+/* ── Tech Grid Background ── */
 function ParticleBg() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef    = useRef<number>(0);
-  const mouseRef  = useRef({ x: -999, y: -999, active: false });
+  const mouseRef  = useRef({ x: -999, y: -999 });
 
   useEffect(() => {
     const canvas = canvasRef.current as any;
@@ -261,27 +261,31 @@ function ParticleBg() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d')!;
-    let W = 0, H = 0;
+    let W = 0, H = 0, frame = 0;
 
-    // ── Particle definition ──
-    type Particle = {
+    const NODE_COUNT  = 55;
+    const MAX_DIST    = 130;
+    const PULSE_SPEED = 0.018;
+
+    type Node = {
       x: number; y: number;
       vx: number; vy: number;
-      life: number; maxLife: number;
-      size: number;
-      hue: number;      // 30–50 = orange-gold
-      opacity: number;
-      trail: { x: number; y: number }[];
+      phase: number;
+      r: number;
     };
 
-    const particles: Particle[] = [];
-    const TRAIL_LEN = 8;
-    const MAX_PARTICLES = 120;
+    let nodes: Node[] = [];
 
-    // Ambient drifting particles (always visible)
-    type Ambient = { x: number; y: number; vx: number; vy: number; size: number; opacity: number; phase: number };
-    const ambients: Ambient[] = [];
-    const AMBIENT_COUNT = 35;
+    const buildNodes = () => {
+      nodes = Array.from({ length: NODE_COUNT }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        phase: Math.random() * Math.PI * 2,
+        r: Math.random() * 1.4 + 0.8,
+      }));
+    };
 
     const resize = () => {
       W = canvas.offsetWidth;
@@ -289,153 +293,125 @@ function ParticleBg() {
       canvas.width  = W * devicePixelRatio;
       canvas.height = H * devicePixelRatio;
       ctx.scale(devicePixelRatio, devicePixelRatio);
-
-      // Init ambient particles
-      ambients.length = 0;
-      for (let i = 0; i < AMBIENT_COUNT; i++) {
-        ambients.push({
-          x: Math.random() * W,
-          y: Math.random() * H,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: -Math.random() * 0.4 - 0.1,
-          size: Math.random() * 1.8 + 0.4,
-          opacity: Math.random() * 0.18 + 0.04,
-          phase: Math.random() * Math.PI * 2,
-        });
-      }
+      buildNodes();
     };
 
-    const spawnParticle = (mx: number, my: number) => {
-      if (particles.length >= MAX_PARTICLES) return;
-      const angle  = Math.random() * Math.PI * 2;
-      const speed  = Math.random() * 3.5 + 1.2;
-      const life   = Math.random() * 55 + 35;
-      particles.push({
-        x: mx + (Math.random() - 0.5) * 12,
-        y: my + (Math.random() - 0.5) * 12,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 1.2,   // bias upward
-        life,
-        maxLife: life,
-        size: Math.random() * 3 + 1,
-        hue: 30 + Math.random() * 25,         // 30–55: warm orange-gold
-        opacity: 1,
-        trail: [],
-      });
-    };
+    const dist = (
+      a: { x: number; y: number },
+      b: { x: number; y: number }
+    ) => Math.hypot(a.x - b.x, a.y - b.y);
 
-    let frame = 0;
-    const draw = (ts: number) => {
+    const draw = () => {
       frame++;
       ctx.clearRect(0, 0, W, H);
 
-      const { x: mx, y: my, active } = mouseRef.current;
-
-      // ── Ambient particles ──
-      ambients.forEach(a => {
-        a.phase += 0.012;
-        a.x += a.vx + Math.sin(a.phase) * 0.2;
-        a.y += a.vy;
-        if (a.y < -10) { a.y = H + 10; a.x = Math.random() * W; }
-        if (a.x < -10) a.x = W + 10;
-        if (a.x > W + 10) a.x = -10;
-
-        ctx.beginPath();
-        ctx.arc(a.x, a.y, a.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(249,162,35,${a.opacity})`;
-        ctx.fill();
-      });
-
-      // ── Spawn cursor particles ──
-      if (active && mx > 0 && my > 0) {
-        const burst = frame % 2 === 0 ? 4 : 2;   // spawn 2–4 per frame
-        for (let i = 0; i < burst; i++) spawnParticle(mx, my);
-
-        // Cursor glow
-        const grd = ctx.createRadialGradient(mx, my, 0, mx, my, 80);
-        grd.addColorStop(0, 'rgba(249,162,35,0.18)');
-        grd.addColorStop(0.5, 'rgba(249,162,35,0.06)');
-        grd.addColorStop(1,   'rgba(249,162,35,0)');
-        ctx.beginPath();
-        ctx.arc(mx, my, 80, 0, Math.PI * 2);
-        ctx.fillStyle = grd;
-        ctx.fill();
+      // ── Move nodes ──
+      for (const n of nodes) {
+        n.phase += PULSE_SPEED;
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < -10) n.x = W + 10;
+        if (n.x > W + 10) n.x = -10;
+        if (n.y < -10) n.y = H + 10;
+        if (n.y > H + 10) n.y = -10;
       }
 
-      // ── Update & draw particles ──
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.life--;
-        if (p.life <= 0) { particles.splice(i, 1); continue; }
+      // ── Subtle dot-grid backdrop ──
+      const step = 42;
+      ctx.fillStyle = 'rgba(249,162,35,0.06)';
+      for (let x = step; x < W; x += step) {
+        for (let y = step; y < H; y += step) {
+          ctx.beginPath();
+          ctx.arc(x, y, 0.7, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
 
-        // Physics
-        p.vx *= 0.97;
-        p.vy *= 0.97;
-        p.vy -= 0.04;   // gravity upward
-        p.x  += p.vx;
-        p.y  += p.vy;
+      const mouse = mouseRef.current;
 
-        // Trail
-        p.trail.push({ x: p.x, y: p.y });
-        if (p.trail.length > TRAIL_LEN) p.trail.shift();
-
-        const progress = p.life / p.maxLife;   // 1 → 0
-        p.opacity = progress < 0.3 ? progress / 0.3 : 1;
-
-        // Draw trail
-        if (p.trail.length > 1) {
-          for (let t = 1; t < p.trail.length; t++) {
-            const ta = (t / p.trail.length) * p.opacity * 0.4;
+      // ── Edges between close nodes ──
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const d = dist(nodes[i], nodes[j]);
+          if (d < MAX_DIST) {
+            const t = 1 - d / MAX_DIST;
             ctx.beginPath();
-            ctx.moveTo(p.trail[t - 1].x, p.trail[t - 1].y);
-            ctx.lineTo(p.trail[t].x, p.trail[t].y);
-            ctx.strokeStyle = `hsla(${p.hue},100%,60%,${ta})`;
-            ctx.lineWidth = p.size * (t / p.trail.length) * 0.8;
-            ctx.lineCap = 'round';
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(249,162,35,${t * 0.14})`;
+            ctx.lineWidth = t * 1.1;
             ctx.stroke();
           }
         }
+      }
 
-        // Draw core
-        const r = p.size * progress;
-        if (r > 0.2) {
-          const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 3);
-          g.addColorStop(0, `hsla(${p.hue},100%,75%,${p.opacity})`);
-          g.addColorStop(0.4, `hsla(${p.hue},100%,60%,${p.opacity * 0.6})`);
-          g.addColorStop(1, `hsla(${p.hue},100%,50%,0)`);
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, r * 3, 0, Math.PI * 2);
-          ctx.fillStyle = g;
-          ctx.fill();
-
-          // Bright core dot
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, r * 0.6, 0, Math.PI * 2);
-          ctx.fillStyle = `hsla(${p.hue},100%,90%,${p.opacity})`;
-          ctx.fill();
+      // ── Mouse-proximity: brighten nearby edges ──
+      for (let i = 0; i < nodes.length; i++) {
+        const dm = dist(nodes[i], mouse);
+        if (dm < 160) {
+          const nt = 1 - dm / 160;
+          for (let j = i + 1; j < nodes.length; j++) {
+            const d = dist(nodes[i], nodes[j]);
+            if (d < MAX_DIST * 1.5) {
+              const et = (1 - d / (MAX_DIST * 1.5)) * nt;
+              ctx.beginPath();
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.strokeStyle = `rgba(249,162,35,${et * 0.52})`;
+              ctx.lineWidth = et * 1.8;
+              ctx.stroke();
+            }
+          }
         }
       }
+
+      // ── Draw nodes ──
+      for (const n of nodes) {
+        const dm    = dist(n, mouse);
+        const near  = Math.max(0, 1 - dm / 160);
+        const pulse = 0.5 + 0.5 * Math.sin(n.phase);
+        const alpha = 0.10 + pulse * 0.08 + near * 0.55;
+        const r     = n.r + near * 2.5;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(249,162,35,${alpha})`;
+        ctx.fill();
+
+        // Soft halo on hover proximity
+        if (near > 0.06) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 5, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(249,162,35,${near * 0.20})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+
+      // ── Horizontal scan line (subtle tech feel) ──
+      const scanY = (frame * 0.35) % H;
+      ctx.strokeStyle = 'rgba(249,162,35,0.045)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, scanY);
+      ctx.lineTo(W, scanY);
+      ctx.stroke();
 
       rafRef.current = requestAnimationFrame(draw);
     };
 
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top, active: true };
-    };
-    const onMouseLeave = () => { mouseRef.current = { x: -999, y: -999, active: false }; };
-    const onTouchMove  = (e: TouchEvent) => {
+    // Touch support
+    const onTouchMove = (e: TouchEvent) => {
       const rect = canvas.getBoundingClientRect();
       const t = e.touches[0];
-      mouseRef.current = { x: t.clientX - rect.left, y: t.clientY - rect.top, active: true };
+      mouseRef.current = { x: t.clientX - rect.left, y: t.clientY - rect.top };
     };
-    const onTouchEnd = () => { mouseRef.current = { x: -999, y: -999, active: false }; };
+    const onTouchEnd = () => { mouseRef.current = { x: -999, y: -999 }; };
 
     const section = canvas.closest('section');
-    section?.addEventListener('mousemove', onMouseMove);
-    section?.addEventListener('mouseleave', onMouseLeave);
     section?.addEventListener('touchmove', onTouchMove, { passive: true });
     section?.addEventListener('touchend', onTouchEnd);
+
     resize();
     window.addEventListener('resize', resize);
     rafRef.current = requestAnimationFrame(draw);
@@ -443,8 +419,6 @@ function ParticleBg() {
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener('resize', resize);
-      section?.removeEventListener('mousemove', onMouseMove);
-      section?.removeEventListener('mouseleave', onMouseLeave);
       section?.removeEventListener('touchmove', onTouchMove);
       section?.removeEventListener('touchend', onTouchEnd);
     };
@@ -453,7 +427,11 @@ function ParticleBg() {
   return (
     <canvas
       ref={canvasRef}
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}
+      style={{
+        position: 'absolute', inset: 0,
+        width: '100%', height: '100%',
+        pointerEvents: 'none', zIndex: 0,
+      }}
     />
   );
 }
