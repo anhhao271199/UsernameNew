@@ -8,7 +8,6 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { ContactModal } from './components/ContactModal';
 import { ThemeIndicator } from './components/ThemeIndicator';
-import { ScrollToTop } from './components/ScrollToTop';
 
 export interface OutletContextType {
   onOpenContact: () => void;
@@ -66,7 +65,6 @@ function RootInner() {
 
       <ThemeIndicator theme={theme} source={source} currentTime={currentTime} onReset={resetToAuto} />
 
-      <ScrollToTop />
       <ScrollRestoration />
 
       <style>{`
@@ -117,16 +115,19 @@ function RootInner() {
           max-height: calc(100vh - 200px) !important;
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
           #chatbase-bubble-button {
             bottom: 76px !important;
             right: 16px !important;
           }
           #chatbase-bubble-window {
-            right: 8px !important;
-            left: 8px !important;
-            width: auto !important;
-            bottom: 132px !important;
+            right: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 65vh !important;
+            max-height: 65vh !important;
+            border-radius: 16px 16px 0 0 !important;
           }
         }
       `}</style>
