@@ -115,6 +115,16 @@ function RootInner() {
           bottom: 80px !important;
           right: 24px !important;
         }
+
+        /* Animation nhấp nháy cho nút Chatbase */
+        @keyframes chatbasePulse {
+          0% { box-shadow: 0 0 0 0 rgba(249,162,35,0.7); }
+          70% { box-shadow: 0 0 0 12px rgba(249,162,35,0); }
+          100% { box-shadow: 0 0 0 0 rgba(249,162,35,0); }
+        }
+        #chatbase-bubble-button {
+          animation: chatbasePulse 2s ease-in-out infinite !important;
+        }
       `}</style>
     </div>
   );
