@@ -98,74 +98,42 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
     smoothScrollToTop(container);
   };
 
-  // ── Overlay backdrop cho Chatbase popup trên mobile ──
+
+  // ── Mobile: fix Chatbase popup position (JS override inline styles) + overlay ──
   useEffect(() => {
     if (window.innerWidth >= 768) return;
 
-    const OVERLAY_ID = 'cb-mobile-overlay';
-
-    const getOrCreateOverlay = () => {
-      let el = document.getElementById(OVERLAY_ID);
-      if (!el) {
-        el = document.createElement('div');
-        el.id = OVERLAY_ID;
-        Object.assign(el.style, {
-          position: 'fixed',
-          inset: '0',
-          top: '0',
-          left: '0',
-          right: '0',
-          bottom: '0',
-          background: 'rgba(0,0,0,0.55)',
-          zIndex: '2147483640',
-          pointerEvents: 'none',
-          transition: 'opacity 0.25s ease',
-          opacity: '0',
-        });
-        // Insert BEFORE chatbase window so it sits behind popup but above page
-        document.body.insertBefore(el, document.body.firstChild);
-      }
-      return el;
+    const fixPopup = (win: HTMLElement) => {
+      win.style.setProperty('position', 'fixed', 'important');
+      win.style.setProperty('left', '0px', 'important');
+      win.style.setProperty('right', '0px', 'important');
+      win.style.setProperty('bottom', '0px', 'important');
+      win.style.setProperty('top', 'auto', 'important');
+      win.style.setProperty('width', '100vw', 'important');
+      win.style.setProperty('max-width', '100vw', 'important');
+      win.style.setProperty('min-width', 'unset', 'important');
+      win.style.setProperty('height', Math.round(window.innerHeight * 0.88) + 'px', 'important');
+      win.style.setProperty('transform', 'none', 'important');
+      win.style.setProperty('translate', 'none', 'important');
+      win.style.setProperty('inset-inline-start', '0px', 'important');
+      win.style.setProperty('margin', '0px', 'important');
+      win.style.setProperty('padding', '0px', 'important');
+      win.style.setProperty('border-radius', '20px 20px 0 0', 'important');
+      win.style.setProperty('z-index', '99999', 'important');
+      win.style.setProperty('overflow', 'hidden', 'important');
+      win.style.setProperty('box-sizing', 'border-box', 'important');
     };
 
-    const showOverlay = () => {
-      const el = getOrCreateOverlay();
-      el.style.opacity = '1';
-    };
-
-    const hideOverlay = () => {
-      const el = document.getElementById(OVERLAY_ID);
-      if (el) el.style.opacity = '0';
-    };
-
-    const checkChatbase = () => {
+    const poll = setInterval(() => {
       const win = document.getElementById('chatbase-bubble-window');
-      if (!win) { hideOverlay(); return; }
-      const style = getComputedStyle(win);
-      const isVisible =
-        style.display !== 'none' &&
-        style.visibility !== 'hidden' &&
-        style.opacity !== '0' &&
-        win.offsetHeight > 10;
-      isVisible ? showOverlay() : hideOverlay();
-    };
+      if (!win) return;
+      const h = win.getBoundingClientRect().height;
+      if (h > 50) {
+        fixPopup(win);
+      }
+    }, 150);
 
-    const observer = new MutationObserver(checkChatbase);
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['style', 'class', 'hidden'],
-    });
-
-    // Also poll every 300ms as fallback (Chatbase may use internal state)
-    const interval = setInterval(checkChatbase, 300);
-
-    return () => {
-      observer.disconnect();
-      clearInterval(interval);
-      document.getElementById(OVERLAY_ID)?.remove();
-    };
+    return () => { clearInterval(poll); };
   }, []);
 
   const handleLogoClick = (e: React.MouseEvent) => {
@@ -459,7 +427,7 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
           boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
           opacity: showScrollTop ? 1 : 0,
           pointerEvents: showScrollTop ? 'auto' : 'none',
-          transform: showScrollTop ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.85)',
+          transform: showScrollTop ? 'scale(1)' : 'scale(0.85)',
           transition: 'opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease',
         }}
         onMouseEnter={(e) => {
@@ -483,53 +451,46 @@ export function Navbar({ theme, onToggleTheme, onOpenContact }: NavbarProps) {
           .hidden-mobile { display: none !important; }
           .show-mobile   { display: flex !important; }
 
-          /* ── FIX: scroll-to-top nằm TRÁI của nút chat Chatbase ── */
-          /* Chatbase chiếm góc bottom-right, ta dịch sang trái 68px */
+          /* Mobile: scroll-top cùng hàng thanh thời gian, bên trái Chatbase */
           .scroll-top-btn {
-            bottom: 20px !important;
-            right: 88px !important;
+            bottom: 16px !important;
+            right: 100px !important;
           }
 
           /* ── FIX: popup Chatbase mobile ── */
-          /* Overlay backdrop được inject bằng JS */
-          #cb-mobile-overlay {
-            position: fixed !important;
-            inset: 0 !important;
-            background: rgba(0,0,0,0.55) !important;
-            z-index: 2147483640 !important;
-            pointer-events: none !important;
-          }
-          /* Container popup: full-width bottom sheet */
+
+          /* Popup Chatbase: bottom sheet trên mobile */
           #chatbase-bubble-window {
             position: fixed !important;
+            top: auto !important;
             left: 0 !important;
             right: 0 !important;
             bottom: 0 !important;
-            top: auto !important;
             width: 100vw !important;
             max-width: 100vw !important;
-            min-width: 100vw !important;
+            min-width: unset !important;
             height: 88dvh !important;
+            max-height: 88dvh !important;
             border-radius: 20px 20px 0 0 !important;
             background: #ffffff !important;
-            box-shadow: 0 -8px 40px rgba(0,0,0,0.25) !important;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.2) !important;
             overflow: hidden !important;
-            transform: translateX(0) !important;
+            transform: none !important;
+            translate: none !important;
+            inset-inline-start: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
-            inset: auto 0 0 0 !important;
+            z-index: 99999 !important;
+            box-sizing: border-box !important;
           }
-          /* Iframe bên trong fill toàn bộ */
           #chatbase-bubble-window iframe {
             position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
+            inset: 0 !important;
             width: 100% !important;
             height: 100% !important;
             border-radius: 20px 20px 0 0 !important;
             margin: 0 !important;
+            transform: none !important;
           }
         }
         @media (min-width: 768px) {
